@@ -18,7 +18,6 @@ int main(int argc, char *argv[])
     int *indices = NULL;
     int N;
 
-    /* ---- Read graph only on rank 0 ---- */
     if (rank == 0) {
         N = cooReader(str, &indexes, &indices) - 1;
     }
@@ -41,7 +40,7 @@ int main(int argc, char *argv[])
     for (int i = 0; i < N; i++)
         colors[i] = i;
 
-    /* ---- MPI partition ---- */
+
     int local_start = (N * rank) / size;
     int local_end   = (N * (rank + 1)) / size;
 
@@ -53,7 +52,6 @@ int main(int argc, char *argv[])
     while (global_active) {
         int local_active = 0;
 
-        /* ---- OpenMP inside MPI ---- */
         #pragma omp parallel for schedule(static) reduction(||:local_active)
         for (int i = local_start; i < local_end; i++) {
             for (int j = indexes[i]; j < indexes[i+1]; j++) {
